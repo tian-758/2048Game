@@ -42,12 +42,12 @@ class game_board(object):
         self.grid[x][y] = new_tile_value
 
     def move(self, direction):
-        def move_left(row):
+        def move_left(og_row):
 
-            length = len(row)
+            length = len(og_row)
 
             # Method to shift the values in the row to the leftmost position
-            def shift():
+            def shift(row):
                 # Create an row with all of the non-zero elements
                 new_row = [i for i in row if i != 0]
                 # Append the difference in zeros to the end of the new row
@@ -55,9 +55,9 @@ class game_board(object):
                 return new_row
 
             # Method to merge adjacent similar values
-            def merge():
+            def merge(row):
                 found_pair = False
-                new_row = [0] * length
+                new_row = []
 
                 for i in range(length):
                     next_val = 0
@@ -69,12 +69,12 @@ class game_board(object):
                         found_pair = True
                     else:
                         next_val = row[i]
-                    new_row[i] = next_val
+                    new_row.append(next_val)# = next_val
 
                 return new_row
 
             # Shift the row, merge everything, then shift again
-            return shift(merge(shift(row)))
+            return shift(merge(shift(og_row)))
 
         # Get the possible moves and operations to do each move
         moves = {}
@@ -98,14 +98,10 @@ class game_board(object):
     def can_move(self, direction):
 
         def can_move_left(row):
-            prev_num = -1
-            for i in row:
-                # The move is possible if either there is an empty space or there is 
-                # two adjacent tiles with the same value, meaning a merge is possible
-                if i == 0 or i == prev_num:
+            for i in range(len(row) - 1):
+                current_val, next_val = row[i], row[i + 1]
+                if (current_val == 0 and next_val != 0) or (current_val != 0 and current_val == next_val):
                     return True
-                else:
-                    prev_num = i
             return False
 
         # Get the possible checks and operations to do each check
@@ -122,4 +118,4 @@ class game_board(object):
 
     def has_lost(self):
         directions = ["LEFT", "RIGHT", "UP", "DOWN"]
-        return not any(self.move)
+        return not any(self.move(direction) for direction in directions)
