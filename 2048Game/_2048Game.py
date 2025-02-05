@@ -15,7 +15,6 @@ window_height = 480
 background_color = pygame.Color(232, 220, 202)
 red = pygame.Color(255, 0, 0)
 white = pygame.Color(255, 255, 255)
-gray = pygame.Color(211, 211, 211)
 black = pygame.Color(0,0,0)
 
 color_map = { 0:pygame.Color(211, 211, 211) }
@@ -73,7 +72,7 @@ def drawBoard():
 
             tile_val = game.grid[row][col]
             x = tile_size * (col - grid_width // 2) + window_width / 2
-            y = tile_size * (row - grid_width // 2) + window_height / 2
+            y = tile_size * (row - grid_height // 2) + window_height / 2
 
             color = GetScoreColor(tile_val)
 
@@ -83,9 +82,10 @@ def drawBoard():
                 tile_font = pygame.font.SysFont('times new roman', 50)
                 tile_surface = tile_font.render(str(tile_val), True, black)
                 tile_rect = tile_surface.get_rect()
-                tile_rect.midtop = (x + tile_size/2, y)
+                tile_rect.midtop = (x + tile_size/2, y + tile_size/4)
                 game_window.blit(tile_surface, tile_rect)
                 pygame.display.flip()
+
 
 drawBoard()
 

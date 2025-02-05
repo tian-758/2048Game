@@ -36,45 +36,46 @@ class game_board(object):
         new_tile_value = 2 if random.randrange(100) < int((1 - self.spawn_four_chance) * 100) else 4
 
         # Get a random location that is empty
-        (x, y) = random.choice([(x, y) for x in range(self.width) for y in range(self.height) if self.grid[x][y] == 0])
+        (x, y) = random.choice([(x, y) for x in range(self.width) for y in range(self.height) if self.grid[y][x] == 0])
 
         # Enter the value of the new tile into the empty slot
-        self.grid[x][y] = new_tile_value
+        self.grid[y][x] = new_tile_value
 
     def move(self, direction):
+
         def move_left(og_row):
 
             length = len(og_row)
 
             # Method to shift the values in the row to the leftmost position
-            def shift(row):
+            def tighten(row_s):
                 # Create an row with all of the non-zero elements
-                new_row = [i for i in row if i != 0]
+                new_row = [i for i in row_s if i != 0]
                 # Append the difference in zeros to the end of the new row
                 new_row += [0 for _ in range(length - len(new_row))]
                 return new_row
 
             # Method to merge adjacent similar values
-            def merge(row):
+            def merge(row_m):
                 found_pair = False
                 new_row = []
 
                 for i in range(length):
                     next_val = 0
                     if found_pair:
-                        next_val = 2 * row[i]
+                        next_val = 2 * row_m[i]
                         self.score += next_val
                         found_pair = False
-                    elif i + 1 < length and row[i] == row[i + 1]:
+                    elif i + 1 < length and row_m[i] == row_m[i + 1]:
                         found_pair = True
                     else:
-                        next_val = row[i]
+                        next_val = row_m[i]
                     new_row.append(next_val)# = next_val
 
                 return new_row
 
             # Shift the row, merge everything, then shift again
-            return shift(merge(shift(og_row)))
+            return tighten(merge(tighten(og_row)))
 
         # Get the possible moves and operations to do each move
         moves = {}
@@ -118,4 +119,4 @@ class game_board(object):
 
     def has_lost(self):
         directions = ["LEFT", "RIGHT", "UP", "DOWN"]
-        return not any(self.move(direction) for direction in directions)
+        return not any(self.can_move(direction) for direction in directions)
